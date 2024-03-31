@@ -27,32 +27,38 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::apiResource('/type',TypeController::class);
-Route::apiResource('/plat',PlatController::class);
-Route::get('/plat/type/{id}',[PlatController::class,"getByType"]);
-Route::apiResource('/menu',MenuController::class);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('logout', [AuthController::class, 'logout']);
+    Route::get('/reservations', [ReservationController::class, 'index']);
+    Route::get('reservations/status/{status}', [ReservationController::class, 'getByStatus']);
+
+    Route::get('/reservations/accept/{id}', [ReservationController::class, 'accept']);
+    Route::get('/reservations/refuse/{id}', [ReservationController::class, 'refuse']);
+    Route::get('/reservations/annuler/{id}', [ReservationController::class, 'annuler']);
+    Route::apiResource('/type',TypeController::class);
+    Route::apiResource('/plat',PlatController::class);
+    Route::get('/plat/type/{id}',[PlatController::class,"getByType"]);
+    Route::apiResource('/menu',MenuController::class);
+});
+
+
 
 
 
 // Routes pour les réservations
 Route::post('/reservations', [ReservationController::class, 'store']);
-Route::get('/reservations', [ReservationController::class, 'index']);
-Route::get('reservations/status/{status}', [ReservationController::class, 'getByStatus']);
-
-Route::get('/reservations/accept/{id}', [ReservationController::class, 'accept']);
-Route::get('/reservations/refuse/{id}', [ReservationController::class, 'refuse']);
-Route::get('/reservations/annuler/{id}', [ReservationController::class, 'annuler']);
-
 
 
 
 // Routes pour les utilisateurs
 Route::post('/register', [UtilisateurController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
-Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
-    $request->user()->tokens()->delete();
-    return response()->json(['message' => 'Logged out']);
-});
+
+
+// Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
+//     $request->user()->tokens()->delete();
+//     return response()->json(['message' => 'Logged out']);
+// });
 
 
 
